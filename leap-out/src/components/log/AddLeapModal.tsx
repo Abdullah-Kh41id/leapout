@@ -18,7 +18,7 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
   const [title, setTitle] = useState("");
   const [activity, setActivity] = useState<LogActivity>("Hiking");
   const [note, setNote] = useState("");
-  const [date, setDate] = useState(toDateKey());
+  const [date, setDate] = useState(() => toDateKey());
   const [photo, setPhoto] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -36,11 +36,16 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
 
   useEffect(() => {
     if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [open, onClose]);
 
   if (!open) return null;
@@ -87,11 +92,16 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <button type="button" className="absolute inset-0 bg-black/70 backdrop-blur-sm" aria-label="Close" onClick={onClose} />
+    <div
+      className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
+      <button type="button" className="absolute inset-0 bg-black/75 backdrop-blur-sm" aria-label="Close" onClick={onClose} />
 
-      <div className="relative z-10 max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-ink-border bg-ink-soft p-5 shadow-card animate-fade-up sm:rounded-3xl sm:p-6">
-        <div className="mb-5 flex items-center justify-between gap-3">
+      <div className="relative z-10 flex max-h-[min(92dvh,720px)] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-ink-border bg-ink-soft shadow-card animate-fade-up sm:rounded-3xl">
+        <div className="flex items-center justify-between gap-3 border-b border-ink-border/70 px-5 py-4">
           <h2 id={titleId} className="font-display text-xl font-bold text-white">
             Add Leap
           </h2>
@@ -104,111 +114,118 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
           </button>
         </div>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div>
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">Photo</label>
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="group relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-ink-border bg-ink transition hover:border-ember/50"
-            >
-              {photo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={photo} alt="Selected leap preview" className="h-full w-full object-cover" />
-              ) : (
-                <div className="px-6 text-center">
-                  <p className="font-medium text-mist-bright">Tap to take or choose a photo</p>
-                  <p className="mt-1 text-xs text-mist-soft">Camera or gallery</p>
-                </div>
-              )}
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="leap-title" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">
-              Title
-            </label>
-            <input
-              id="leap-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={80}
-              placeholder="e.g. Morning parkrun"
-              className="w-full rounded-xl border border-ink-border bg-ink px-4 py-3 text-sm text-white outline-none placeholder:text-mist-soft focus:border-ember/60"
-              required
-            />
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-mist">Activity</p>
-            <div className="flex flex-wrap gap-2">
-              {LOG_ACTIVITIES.map((item) => {
-                const active = item === activity;
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setActivity(item)}
-                    className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
-                      active
-                        ? "bg-ember text-ink"
-                        : "bg-ink text-mist-bright ring-1 ring-ink-border hover:ring-mist-soft/40"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                );
-              })}
+        <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
+            <div>
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">Photo</label>
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="group relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-ink-border bg-ink transition hover:border-ember/50"
+              >
+                {photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={photo} alt="Selected leap preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="px-6 text-center">
+                    <p className="font-medium text-mist-bright">Tap to take or choose a photo</p>
+                    <p className="mt-1 text-xs text-mist-soft">Camera or gallery</p>
+                  </div>
+                )}
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
+              />
             </div>
+
+            <div>
+              <label htmlFor="leap-title" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">
+                Title
+              </label>
+              <input
+                id="leap-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={80}
+                placeholder="e.g. Morning parkrun"
+                className="w-full rounded-xl border border-ink-border bg-ink px-4 py-3 text-sm text-white outline-none placeholder:text-mist-soft focus:border-ember/60"
+                required
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-mist">Activity</p>
+              <div className="flex flex-wrap gap-2">
+                {LOG_ACTIVITIES.map((item) => {
+                  const active = item === activity;
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setActivity(item)}
+                      className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
+                        active
+                          ? "bg-ember text-ink"
+                          : "bg-ink text-mist-bright ring-1 ring-ink-border hover:ring-mist-soft/40"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="leap-note" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">
+                Note <span className="normal-case tracking-normal text-mist-soft">(optional)</span>
+              </label>
+              <textarea
+                id="leap-note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                maxLength={280}
+                rows={3}
+                placeholder="How did it feel?"
+                className="w-full resize-none rounded-xl border border-ink-border bg-ink px-4 py-3 text-sm text-white outline-none placeholder:text-mist-soft focus:border-ember/60"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="leap-date" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">
+                Date
+              </label>
+              <input
+                id="leap-date"
+                type="date"
+                value={date}
+                max={toDateKey()}
+                onChange={(e) => setDate(e.target.value || toDateKey())}
+                className="w-full rounded-xl border border-ink-border bg-ink px-4 py-3 text-sm text-white outline-none focus:border-ember/60 [color-scheme:dark]"
+                required
+              />
+            </div>
+
+            {error && <p className="text-sm text-ember-soft">{error}</p>}
           </div>
 
-          <div>
-            <label htmlFor="leap-note" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">
-              Note <span className="normal-case tracking-normal text-mist-soft">(optional)</span>
-            </label>
-            <textarea
-              id="leap-note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              maxLength={280}
-              rows={3}
-              placeholder="How did it feel?"
-              className="w-full resize-none rounded-xl border border-ink-border bg-ink px-4 py-3 text-sm text-white outline-none placeholder:text-mist-soft focus:border-ember/60"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="leap-date" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-mist">
-              Date
-            </label>
-            <input
-              id="leap-date"
-              type="date"
-              value={date}
-              max={toDateKey()}
-              onChange={(e) => setDate(e.target.value || toDateKey())}
-              className="w-full rounded-xl border border-ink-border bg-ink px-4 py-3 text-sm text-white outline-none focus:border-ember/60 [color-scheme:dark]"
-              required
-            />
-          </div>
-
-          {error && <p className="text-sm text-ember-soft">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full rounded-2xl bg-ember py-3.5 text-sm font-bold text-ink transition hover:bg-ember-soft active:scale-[0.98] disabled:opacity-60"
+          <div
+            className="border-t border-ink-border/70 bg-ink-soft px-5 pt-3"
+            style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
           >
-            {saving ? "Saving…" : "Save Leap"}
-          </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full rounded-2xl bg-ember py-3.5 text-sm font-bold text-ink transition hover:bg-ember-soft active:scale-[0.98] disabled:opacity-60"
+            >
+              {saving ? "Saving…" : "Save Leap"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
