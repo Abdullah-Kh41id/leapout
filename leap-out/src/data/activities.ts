@@ -50,7 +50,7 @@ export const activities: Activity[] = [
     travel: "22 min",
     firstTimerFriendly: false,
     image:
-      "https://images.unsplash.com/photo-1599058945522-28d584b6f14f?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=1200&q=80",
     imageAlt: "Muay Thai fighter training with pads",
   },
   {

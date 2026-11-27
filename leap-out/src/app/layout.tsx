@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Leap Out",
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
