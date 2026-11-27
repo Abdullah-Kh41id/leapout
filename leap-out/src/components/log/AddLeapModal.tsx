@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { fileToCompressedDataUrl } from "@/lib/image";
 import { createLogId } from "@/lib/logStorage";
 import { LOG_ACTIVITIES, type LeapLogEntry, type LogActivity } from "@/lib/logTypes";
@@ -48,8 +49,6 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
     };
   }, [open, onClose]);
 
-  if (!open) return null;
-
   async function handlePhotoChange(file: File | null) {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -91,16 +90,18 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
     onClose();
   }
 
-  return (
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
+      className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
     >
       <button type="button" className="absolute inset-0 bg-black/75 backdrop-blur-sm" aria-label="Close" onClick={onClose} />
 
-      <div className="relative z-10 flex max-h-[min(92dvh,720px)] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-ink-border bg-ink-soft shadow-card animate-fade-up sm:rounded-3xl">
+      <div className="relative z-10 flex max-h-[min(92dvh,720px)] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-ink-border bg-ink-soft shadow-card animate-fade-up sm:mb-0 sm:rounded-3xl">
         <div className="flex items-center justify-between gap-3 border-b border-ink-border/70 px-5 py-4">
           <h2 id={titleId} className="font-display text-xl font-bold text-white">
             Add Leap
@@ -215,7 +216,7 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
           </div>
 
           <div
-            className="border-t border-ink-border/70 bg-ink-soft px-5 pt-3"
+            className="shrink-0 border-t border-ink-border/70 bg-ink-soft px-5 pt-3"
             style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
           >
             <button
@@ -228,6 +229,7 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
