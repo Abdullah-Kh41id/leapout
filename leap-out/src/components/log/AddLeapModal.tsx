@@ -129,16 +129,16 @@ export default function AddLeapModal({ open, onClose, onSave }: Props) {
                   <img src={photo} alt="Selected leap preview" className="h-full w-full object-cover" />
                 ) : (
                   <div className="px-6 text-center">
-                    <p className="font-medium text-mist-bright">Tap to take or choose a photo</p>
-                    <p className="mt-1 text-xs text-mist-soft">Camera or gallery</p>
+                    <p className="font-medium text-mist-bright">Choose Photo</p>
+                    <p className="mt-1 text-xs text-mist-soft">Take a new one or pick from your gallery</p>
                   </div>
                 )}
               </button>
+              {/* No capture attr — lets mobile browsers offer Camera OR Photo Library */}
               <input
                 ref={fileRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 className="hidden"
                 onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
               />
