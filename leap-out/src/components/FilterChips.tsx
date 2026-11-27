@@ -9,7 +9,7 @@ type Props = {
 
 export default function FilterChips({ active, onChange }: Props) {
   return (
-    <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+    <div className="no-scrollbar flex justify-center gap-2 overflow-x-auto pb-1">
       {FILTERS.map((filter) => {
         const isActive = filter === active;
         return (

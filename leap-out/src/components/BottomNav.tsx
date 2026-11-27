@@ -14,6 +14,16 @@ const links = [
     ),
   },
   {
+    href: "/log",
+    label: "Log",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="4" y="3.5" width="16" height="17" rx="2.5" />
+        <path d="M8 8h8M8 12h8M8 16h5" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
     href: "/map",
     label: "Map",
     icon: (
@@ -46,19 +56,19 @@ export default function BottomNav() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Main"
     >
-      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-2 pt-2 pb-2">
+      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-1 pt-2 pb-2">
         {links.map((link) => {
           const active = pathname === link.href;
           return (
             <li key={link.href} className="flex-1">
               <Link
                 href={link.href}
-                className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 transition-colors ${
+                className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2 transition-colors ${
                   active ? "text-ember" : "text-mist-soft hover:text-mist-bright"
                 }`}
               >
                 <span className={active ? "scale-105 transition-transform" : ""}>{link.icon}</span>
-                <span className="text-[11px] font-medium tracking-wide">{link.label}</span>
+                <span className="text-[10px] font-medium tracking-wide sm:text-[11px]">{link.label}</span>
               </Link>
             </li>
           );
